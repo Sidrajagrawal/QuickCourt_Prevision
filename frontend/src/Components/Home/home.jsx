@@ -63,6 +63,14 @@ const HomePage = () => {
 
       {/* Hero Section */}
       <div className="px-4 md:px-6 py-12 relative overflow-hidden">
+        <div className="absolute top-6 right-6">
+  <Link
+    to="/profile"
+    className="px-4 py-2 rounded-full bg-green-500 text-white font-semibold shadow hover:scale-105 transition-all"
+  >
+    Profile
+  </Link>
+</div>
         {/* Background Decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className={`absolute top-20 right-20 w-72 h-72 ${
@@ -152,14 +160,6 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Mobile Badge */}
-      <div className="md:hidden px-4 mb-8">
-        <div className="flex justify-center">
-          <div className="bg-gradient-to-r from-emerald-500 to-green-500 text-white px-6 py-3 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 hover:from-emerald-400 hover:to-green-400">
-            Joyful Yak
-          </div>
-        </div>
-      </div>
 
       {/* Venues Section */}
       <div className="px-4 md:px-6 py-8">
@@ -200,8 +200,6 @@ const HomePage = () => {
             <VenueCard
               key={index}
               venue={venue}
-              showBadge={index === 1}
-              badgeText="Joyful Yak"
               isDarkMode={isDarkMode}
             />
           ))}

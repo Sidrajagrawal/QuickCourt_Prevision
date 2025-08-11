@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useDarkMode } from "../DarkModeContext.jsx";
 
 function Pagination({ page, total, pageSize, onChange }) {
@@ -54,12 +53,4 @@ function Pagination({ page, total, pageSize, onChange }) {
     </nav>
   );
 }
-
-Pagination.propTypes = {
-  page: PropTypes.number.isRequired,
-  total: PropTypes.number.isRequired,
-  pageSize: PropTypes.number.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
-
 export default Pagination;

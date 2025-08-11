@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useDarkMode } from "../DarkModeContext.jsx";
 
 function SearchBar({ value, onChange }) {
@@ -22,9 +21,5 @@ function SearchBar({ value, onChange }) {
   );
 }
 
-SearchBar.propTypes = {
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-};
 
 export default SearchBar;

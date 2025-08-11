@@ -1,7 +1,7 @@
-import PropTypes from "prop-types";
+import React from "react";
 import { useDarkMode } from "../DarkModeContext.jsx";
 
-function VenueCard({ venue, onView, showBadge = false, badgeText = "" }) {
+function VenueCard({ venue, onView}) {
   const { isDarkMode } = useDarkMode();
 
   return (
@@ -12,11 +12,6 @@ function VenueCard({ venue, onView, showBadge = false, badgeText = "" }) {
           : "bg-white border-gray-200 hover:border-gray-300"
       }`}
     >
-      {showBadge && (
-        <div className="absolute top-3 right-3 bg-green-600 text-white px-2 py-1 rounded-md text-xs font-semibold z-10">
-          {badgeText}
-        </div>
-      )}
 
       <div
         className={`h-36 flex items-center justify-center text-xs transition-colors duration-200 ${
@@ -73,12 +68,5 @@ function VenueCard({ venue, onView, showBadge = false, badgeText = "" }) {
     </div>
   );
 }
-
-VenueCard.propTypes = {
-  venue: PropTypes.object.isRequired,
-  onView: PropTypes.func.isRequired,
-  showBadge: PropTypes.bool,
-  badgeText: PropTypes.string,
-};
 
 export default VenueCard;

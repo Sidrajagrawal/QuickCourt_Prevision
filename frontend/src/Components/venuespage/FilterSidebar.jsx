@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { useDarkMode } from "../DarkModeContext.jsx";
 
@@ -156,11 +155,5 @@ function FiltersSidebar({ filters, onChange, onClear }) {
     </aside>
   );
 }
-
-FiltersSidebar.propTypes = {
-  filters: PropTypes.object.isRequired,
-  onChange: PropTypes.func.isRequired,
-  onClear: PropTypes.func.isRequired,
-};
 
 export default FiltersSidebar;
