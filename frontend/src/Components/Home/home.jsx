@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import Navbar from "../navbar/navbar.jsx";
-import PopularSports from "../Home/PopularSports.jsx";
-import VenueCard from "../Home/VenueCard.jsx";
+import PopularSports from "./PopularSports.jsx";
+import VenueCard from "./VenueCard.jsx";
 import heroImage from "../../assets/hero.png"; // replace with your actual hero image path
-import { useDarkMode } from "../DarkModeContext.jsx"; // ✅ use global dark mode
+import { useDarkMode } from "../DarkModeContext.jsx"; // ✅
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -171,7 +172,12 @@ const HomePage = () => {
           <button className={`transition-all duration-300 text-sm flex items-center space-x-2 font-semibold hover:scale-105 ${
             isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
           }`}>
-            <span>See all venues</span>
+            <Link
+  to="/venues"
+  className="mt-6 px-6 py-3 bg-green-500 text-white rounded-full font-semibold shadow hover:scale-105 transition-all"
+>
+  See All Venues
+</Link>
             <svg
               className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200"
               fill="none"
