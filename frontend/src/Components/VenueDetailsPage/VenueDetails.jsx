@@ -89,7 +89,7 @@ const VenueDetails = () => {
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
           <motion.div
             className={`absolute -top-40 -right-40 w-80 h-80 rounded-full ${
-              darkMode ? 'bg-blue-500/10' : 'bg-blue-400/20'
+              darkMode ? 'bg-red-500/10' : 'bg-blue-400/20'
             } blur-3xl`}
             animate={{
               scale: [1, 1.2, 1],
