@@ -1,31 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MapPin, 
   Clock, 
-  Star,   
+  Star,   
   MapPinIcon,
   Navigation
 } from 'lucide-react';
-import Map from './Map'; // Use the enhanced map component
+import Map from './Map';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from "prop-types"; // Import PropTypes
 
-const VenueDetailsCard = ({ darkMode }) => {
+const VenueDetailsCard = ({ venue, darkMode }) => {
   const navigate = useNavigate();
+  
+  // Use venue data from props
+  const { name, rating, reviews, location, city, pricePerHour } = venue;
+  const venueAddress = `${location}, ${city}`;
+
   const handleBookVenue = () => {
-    // Route to payments page
     console.log('Navigating to /payments');
-    navigate('/payments');
-    // In a real app: navigate('/payments');
+    navigate('/payments', { state: { venue } }); // Pass the venue data to the payment page
   };
 
   const handleGetDirections = () => {
-    const venueAddress = "2nd Floor, Aangan Banquet Hall, Opp. Akruti Heights, Satellite, Jodhpur Village, Ahmedabad, Gujarat - 380051";
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueAddress)}`;
+    // This is a placeholder, a real app would use the specific address
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(venueAddress)}`;
     window.open(url, '_blank');
   };
 
-  // More accurate coordinates for Satellite, Ahmedabad
+  // Coordinates for a general location (e.g., center of Ahmedabad)
   const venuePosition = {
     lat: 23.0225,
     lng: 72.5714
@@ -48,26 +52,31 @@ const VenueDetailsCard = ({ darkMode }) => {
         whileHover={{ scale: 1.02 }}
       >
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold">SBR Badminton</h1>
+          {/* Display dynamic venue name */}
+          <h1 className="text-3xl font-bold">{name}</h1> 
           <motion.div
             className="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.4, type: "spring" }}
           >
-            Joyful Whale
+            {/* You had a hardcoded name here, which might be a venue type or a badge */}
+            {/* Assuming it was a type, you can use venue.type */}
+            Joyful Whale 
           </motion.div>
         </div>
 
         <div className="flex items-center gap-4 mb-6">
           <div className="flex items-center gap-2">
             <MapPin className="w-5 h-5 text-red-500" />
-            <span className="text-sm">Satellite, Jodhpur Village</span>
+            {/* Display dynamic venue address/location */}
+            <span className="text-sm">{location}, {city}</span> 
           </div>
           <div className="flex items-center gap-2">
             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-            <span className="font-semibold">4.5</span>
-            <span className="text-sm opacity-75">(6)</span>
+            {/* Display dynamic rating and reviews */}
+            <span className="font-semibold">{rating}</span> 
+            <span className="text-sm opacity-75">({reviews})</span> 
           </div>
         </div>
 
@@ -78,7 +87,7 @@ const VenueDetailsCard = ({ darkMode }) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-         Book This Venue
+          Book This Venue
         </motion.button>
       </motion.div>
 
@@ -127,11 +136,9 @@ const VenueDetailsCard = ({ darkMode }) => {
           </motion.button>
         </div>
         
+        {/* Display dynamic address */}
         <p className="text-sm leading-relaxed mb-4">
-          2nd Floor, Aangan Banquet Hall<br />
-          Opp. Akruti Heights, Satellite,<br />
-          Jodhpur Village, Ahmedabad, Gujarat<br />
-          - 380051
+          {venueAddress}
         </p>
         
         {/* Enhanced Google Maps */}
@@ -141,12 +148,17 @@ const VenueDetailsCard = ({ darkMode }) => {
           transition={{ delay: 0.5 }}
           className="overflow-hidden rounded-xl"
         >
+          {/* This Map component needs to be enhanced to work with the venue prop, if it needs to display a specific location */}
+          {/* For now, it uses a generic coordinate. You would need to add coordinates to your venue data for this to be dynamic. */}
+          
           <Map 
             apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
             position={venuePosition}
             darkMode={darkMode}
             height="200px"
           />
+         
+          
         </motion.div>
         
         {/* Quick Actions */}
@@ -179,6 +191,11 @@ const VenueDetailsCard = ({ darkMode }) => {
       </motion.div>
     </motion.div>
   );
+};
+
+VenueDetailsCard.propTypes = {
+  venue: PropTypes.object.isRequired,
+  darkMode: PropTypes.bool.isRequired,
 };
 
 export default VenueDetailsCard;

@@ -6,14 +6,13 @@ function VenueCard({ venue, onView }) {
 
   return (
     <div
+      onClick={() => onView(venue)}
       className={`rounded-xl border overflow-hidden transition-all duration-200 cursor-pointer relative hover:shadow-lg ${
         isDarkMode
-          ? "bg-gray-800 border-gray-700 hover:border-gray-600"
+          ? "bg-gray-800 border-gray-700 hover:border-gray-600" // Updated to a solid gray background
           : "bg-white border-gray-200 hover:border-gray-300"
       }`}
     >
- 
-
       <div
         className={`h-36 flex items-center justify-center text-xs transition-colors duration-200 ${
           isDarkMode
@@ -55,7 +54,10 @@ function VenueCard({ venue, onView }) {
             </div>
           </div>
           <button
-            onClick={() => onView(venue)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onView(venue);
+            }}
             className={`rounded-lg px-3 py-1 text-xs border transition-all ${
               isDarkMode
                 ? "bg-green-500/20 hover:bg-green-500/30 border-green-400/30 text-green-200"
@@ -73,6 +75,6 @@ function VenueCard({ venue, onView }) {
 VenueCard.propTypes = {
   venue: PropTypes.object.isRequired,
   onView: PropTypes.func.isRequired,
-}
+};
 
 export default VenueCard;

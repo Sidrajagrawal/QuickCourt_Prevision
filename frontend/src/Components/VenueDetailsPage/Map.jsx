@@ -11,8 +11,6 @@ const Map = ({ apiKey, position, darkMode = false, height = '250px' }) => {
             </div>
         );
     }
-
-    // Custom map styles for dark/light mode
     const lightMapStyles = [
         {
             featureType: "all",

@@ -12,7 +12,6 @@ export const useDarkMode = () => {
   return context;
 };
 
-// Dark Mode Provider Component
 export const DarkModeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 

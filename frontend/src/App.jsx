@@ -17,7 +17,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<BackAuth />} />
           <Route path="/venues" element={<VenuesPage />} />
-          <Route path="/venueDetails" element={<VenueDetails/>} />
+          <Route path="/venue-details" element={<VenueDetails />} />
           <Route path="/payments" element = {<CourtBooking/>} />
         </Routes>
       </Router>

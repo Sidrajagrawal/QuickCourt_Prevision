@@ -99,17 +99,14 @@ const SportsAvailable = ({ darkMode }) => {
     <motion.div
       className="mb-8"
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      animate={{ opacity: 1}}
       transition={{ duration: 0.5 }}
     >
       <div className="mb-6">
         <h3 className="text-xl font-bold mb-2">Sports Available</h3>
-        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-          (Click on sports to view price chart)
-        </p>
       </div>
       
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 text-black ">
         {sports.map((sport, index) => (
           <SportsCard
             key={sport.id}
