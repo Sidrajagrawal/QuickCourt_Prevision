@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from 'react'
 import './App.css'
@@ -7,7 +8,8 @@ import CourtBooking from "./Components/PaymentPage/CourtBooking";
 
 function App() {
   return (
-     <Router>
+    <DarkModeProvider>
+      <Router>
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/venueDetails" element={<VenueDetails/>} />
@@ -15,7 +17,8 @@ function App() {
 
         </Routes>
       </Router>
-  )
+    </DarkModeProvider>
+  );
 }
 
-export default App
+export default App;
