@@ -2,14 +2,22 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from 'react'
 import './App.css'
 import BackAuth from './Components/Auth/BackAuth.jsx'
+import Home from "./Components/Home/Home.jsx";
+import VenuesPage from "./Components/VenuePage/VenuePage.jsx";
+import { DarkModeProvider } from "./Components/DarkModeContext.jsx";
+
 
 function App() {
   return (
+     <DarkModeProvider>
      <Router>
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/auth" element={<BackAuth />} />
+          <Route path="/venues" element={<VenuesPage />} />
         </Routes>
       </Router>
+      </DarkModeProvider>
   )
 }
 
