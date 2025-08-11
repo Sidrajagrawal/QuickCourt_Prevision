@@ -12,7 +12,7 @@ from accounts.managers import UserManager
 class User(AbstractBaseUser, PermissionsMixin):
     class Roles(models.TextChoices):
         USER = "USER", _("User")
-        FACILITY = "FACILITY", _("Facility Owner")
+        FACILITY = "FACILITY", _("Facility")
         ADMIN = "ADMIN", _("Admin")
 
     email = models.EmailField(max_length=255, unique=True, verbose_name=_('Email Address'))

@@ -1,40 +1,35 @@
+import axios from "axios";
+import { PAGE_SIZE } from "./constants";
 
-export async function fetchVenues({ page = 1, pageSize = PAGE_SIZE, q = '', filters = {} } = {}) {
-  // simulate network latency
-  await new Promise((r) => setTimeout(r, 350));
+export async function fetchVenues({
+  page = 1,
+  pageSize = PAGE_SIZE,
+  q = "",
+  filters = {},
+} = {}) {
+  const res = await axios.get("http://127.0.0.1:8000/api/v1/venues/", {
+    params: {
+      page,
+      page_size: pageSize,
+      search: q || undefined,
+      type: filters.type || undefined,
+      min_price: filters.minPrice ?? undefined,
+      max_price: filters.maxPrice ?? undefined,
+      min_rating: filters.minRating ?? undefined,
+    },
+  });
 
-  // Mock dataset of 36 items
-  const all = Array.from({ length: 36 }).map((_, i) => ({
-    id: i + 1,
-    name: `Court ${i + 1}`,
-    city: 'Ahmedabad',
-    type: i % 3 === 0 ? 'Outdoor' : 'Indoor',
-    pricePerHour: 250 + (i % 6) * 50,
-    rating: +(3 + (i % 3) * 0.5).toFixed(1),
-    approved: true,
-    image: null,
-  }));
-    // simple search & filter 
-  let filtered = all.filter((v) => v.approved);
-  if (q) {
-    const term = q.trim().toLowerCase();
-    filtered = filtered.filter((v) => v.name.toLowerCase().includes(term) || v.city.toLowerCase().includes(term));
+  if (res.data.results) {
+    // DRF paginated response
+    return {
+      data: res.data.results,
+      total: res.data.count,
+    };
   }
-  if (filters.type) filtered = filtered.filter((v) => v.type === filters.type);
-  if (filters.minPrice != null) filtered = filtered.filter((v) => v.pricePerHour >= filters.minPrice);
-  if (filters.maxPrice != null) filtered = filtered.filter((v) => v.pricePerHour <= filters.maxPrice);
-  if (filters.minRating != null) {
-  filtered = filtered.filter(
-    (v) => Number(v.rating) >= Number(filters.minRating)
-  );
-  if(typeof filters.minRating === "number") filtered = filtered.filter((v) => v.rating >= filters.minRating);
-}
 
-
-
-  const total = filtered.length;
-  const start = (page - 1) * pageSize;
-  const pageItems = filtered.slice(start, start + pageSize);
-
-  return { data: pageItems, total };
+  // If your API doesn’t paginate
+  return {
+    data: res.data,
+    total: res.data.length,
+  };
 }

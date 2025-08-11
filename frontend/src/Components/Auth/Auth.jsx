@@ -8,7 +8,7 @@ import SignupForm from './SignupForm';
 import OtpVerification from './OtpVerification';
 import ForgotPasswordFlow from './ForgotPasswordFlow';
 import { LoadingSpinner, SuccessIcon } from './AnimatedIcons';
-import { ChevronDown } from "lucide-react"; // Make sure to import this for RoleSelector
+import { ChevronDown } from "lucide-react";
 
 const API_BASE = 'http://localhost:8000/accounts/auth';
 
@@ -48,7 +48,7 @@ const Auth = () => {
         password2: '',
     });
 
-    const options = ["User", "Facility User", "Admin"];
+    const options = ["User", "Facility", "Admin"];
 
     // Animation variants
     const containerVariants = {

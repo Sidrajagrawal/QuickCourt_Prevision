@@ -1,89 +1,34 @@
+// frontend/src/Components/Venue/SportsAvailable.jsx
 import React, { useState } from 'react';
-import { motion} from 'framer-motion';
-import {
-    Trophy,
-    Target,
-    Zap
-
-} from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Trophy, Target, Zap } from 'lucide-react';
 import SportsCard from './SportsCard';
 
-
-const SportsAvailable = ({ darkMode }) => {
+const SportsAvailable = ({ darkMode, sports = [] }) => {
   const [showPopover, setShowPopover] = useState(false);
   const [popoverData, setPopoverData] = useState(null);
 
-  const sports = [
-    {
-      id: 'badminton',
-      name: 'Badminton',
-      icon: Trophy,
-      courtType: 'Badminton Standard Synthetic',
-      pricing: [
-        {
-          period: 'Monday - Friday',
-          slots: [
-            { rate: 'INR 500.0 / hour', time: '05:00 AM - 07:00 AM' },
-            { rate: 'INR 500.0 / hour', time: '04:00 PM - 10:00 PM' }
-          ]
-        },
-        {
-          period: 'Saturday - Sunday',
-          slots: [
-            { rate: 'INR 500.0 / hour', time: '05:00 AM - 10:00 PM' }
-          ]
-        },
-        {
-          period: 'Holiday(s)',
-          slots: [
-            { rate: 'INR 500.0 / hour', time: '05:00 AM - 10:00 PM' }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'table-tennis',
-      name: 'Table Tennis',
-      icon: Target,
-      courtType: 'Table Tennis Premium',
-      pricing: [
-        {
-          period: 'Monday - Friday',
-          slots: [
-            { rate: 'INR 300.0 / hour', time: '05:00 AM - 07:00 AM' },
-            { rate: 'INR 350.0 / hour', time: '04:00 PM - 10:00 PM' }
-          ]
-        },
-        {
-          period: 'Saturday - Sunday',
-          slots: [
-            { rate: 'INR 400.0 / hour', time: '05:00 AM - 10:00 PM' }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'box-cricket',
-      name: 'Box Cricket',
-      icon: Zap,
-      courtType: 'Box Cricket Arena',
-      pricing: [
-        {
-          period: 'Monday - Friday',
-          slots: [
-            { rate: 'INR 800.0 / hour', time: '06:00 AM - 08:00 AM' },
-            { rate: 'INR 1000.0 / hour', time: '05:00 PM - 11:00 PM' }
-          ]
-        },
-        {
-          period: 'Saturday - Sunday',
-          slots: [
-            { rate: 'INR 1200.0 / hour', time: '06:00 AM - 11:00 PM' }
-          ]
-        }
-      ]
-    }
-  ];
+  // Map sport names from API to icons
+  const iconMap = {
+    Badminton: Trophy,
+    Basketball: Target,
+    Cricket: Zap,
+    // add more mappings here as needed
+  };
+
+  // Convert API sports array into the structure SportsCard expects
+  const sportsData = sports.map((name, idx) => ({
+    id: idx,
+    name,
+    icon: iconMap[name] || Trophy, // default icon
+    courtType: `${name} Court`, // placeholder
+    pricing: [
+      {
+        period: 'Monday - Friday',
+        slots: [{ rate: 'Contact for rates', time: '—' }]
+      }
+    ]
+  }));
 
   const handleSportHover = (sport) => {
     setPopoverData(sport);
@@ -95,19 +40,28 @@ const SportsAvailable = ({ darkMode }) => {
     setPopoverData(null);
   };
 
+  if (!sports.length) {
+    return (
+      <div className="mb-8">
+        <h3 className="text-xl font-bold mb-2">Sports Available</h3>
+        <p className="text-sm opacity-70">No sports information available.</p>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       className="mb-8"
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1}}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <div className="mb-6">
         <h3 className="text-xl font-bold mb-2">Sports Available</h3>
       </div>
-      
-      <div className="grid grid-cols-3 gap-4 text-black ">
-        {sports.map((sport, index) => (
+
+      <div className="grid grid-cols-3 gap-4 text-black">
+        {sportsData.map((sport, index) => (
           <SportsCard
             key={sport.id}
             sport={sport}
@@ -124,4 +78,4 @@ const SportsAvailable = ({ darkMode }) => {
   );
 };
 
-export default SportsAvailable
+export default SportsAvailable;

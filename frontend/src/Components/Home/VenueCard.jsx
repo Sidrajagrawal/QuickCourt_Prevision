@@ -1,80 +1,63 @@
-import PropTypes from "prop-types";
-import { useDarkMode } from "../DarkModeContext.jsx";
+// frontend/src/Components/Home/VenueCard.jsx
+import React from "react";
+import { MapPin, Star } from "lucide-react";
 
-function VenueCard({ venue, onView }) {
-  const { isDarkMode } = useDarkMode();
+const VenueCard = ({ venue, onView, isDarkMode }) => {
+  const shortLocation =
+    venue.location?.landmark || venue.location?.city || "";
+
+  const topSports = Array.isArray(venue.sports)
+    ? venue.sports.slice(0, 2)
+    : [];
 
   return (
     <div
       onClick={() => onView(venue)}
-      className={`rounded-xl border overflow-hidden transition-all duration-200 cursor-pointer relative hover:shadow-lg ${
-        isDarkMode
-          ? "bg-gray-800 border-gray-700 hover:border-gray-600" // Updated to a solid gray background
-          : "bg-white border-gray-200 hover:border-gray-300"
+      className={`cursor-pointer p-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ${
+        isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
       }`}
     >
-      <div
-        className={`h-36 flex items-center justify-center text-xs transition-colors duration-200 ${
-          isDarkMode
-            ? "bg-gradient-to-br from-gray-800/50 to-gray-700/50 text-gray-400"
-            : "bg-gray-100 text-gray-500"
-        }`}
-      >
-        📷 Image Coming Soon
+      {/* Rating */}
+      <div className="flex items-center mb-2">
+        <Star className="w-4 h-4 text-yellow-500 mr-1" />
+        <span className="font-semibold">{venue.rating || "4.5"}</span>
+        <span className="text-gray-500 ml-1">
+          ({venue.reviews_count || "0"})
+        </span>
       </div>
 
-      <div className="p-4 space-y-3">
-        <div className="flex items-center space-x-1 text-yellow-400 text-sm">
-          <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-          <span className="font-medium">{venue.rating}</span>
-        </div>
+      {/* Venue Name */}
+      <h3 className="text-lg font-bold mb-1">{venue.name}</h3>
 
-        <h3
-          className={`font-semibold text-sm transition-colors duration-200 ${
-            isDarkMode ? "text-white" : "text-gray-900"
-          }`}
-        >
-          {venue.name}
-        </h3>
+      {/* Location */}
+      <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+        <MapPin className="w-4 h-4 mr-1" />
+        {shortLocation}
+      </div>
 
-        <div
-          className={`text-xs transition-colors duration-200 ${
-            isDarkMode ? "text-gray-400" : "text-gray-500"
-          }`}
-        >
-          {venue.type} • {venue.city}
-        </div>
-
-        <div className="flex items-center justify-between pt-2">
-          <div className="text-sm">
-            <div className="font-medium text-green-500">
-              ₹{venue.pricePerHour} / hr
-            </div>
-          </div>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onView(venue);
-            }}
-            className={`rounded-lg px-3 py-1 text-xs border transition-all ${
-              isDarkMode
-                ? "bg-green-500/20 hover:bg-green-500/30 border-green-400/30 text-green-200"
-                : "bg-green-100 hover:bg-green-200 border-green-300 text-green-800"
-            }`}
+      {/* Sports & Price */}
+      <div className="flex flex-wrap gap-2 mb-3">
+        {topSports.map((sport, idx) => (
+          <span
+            key={idx}
+            className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white"
           >
-            View Details
-          </button>
-        </div>
+            #{sport}
+          </span>
+        ))}
+        <span className="px-2 py-1 text-xs rounded-full bg-blue-500 text-white">
+          ₹ {venue.price_per_hour} /hr
+        </span>
       </div>
+
+      {/* Top Rated Badge */}
+      {venue.rating >= 4.5 && (
+        <div className="px-2 py-1 text-xs rounded-full bg-yellow-400 text-black inline-block">
+          ★ Top Rated
+        </div>
+      )}
     </div>
   );
-}
-
-VenueCard.propTypes = {
-  venue: PropTypes.object.isRequired,
-  onView: PropTypes.func.isRequired,
 };
 
 export default VenueCard;
