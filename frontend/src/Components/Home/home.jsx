@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../navbar/navbar.jsx";
-import PopularSports from "../Home/PopularSports.jsx";
-import VenueCard from "../Home/VenueCard.jsx";
+import PopularSports from "./PopularSports.jsx";
+import VenueCard from "./VenueCard.jsx";
 import heroImage from "../../assets/hero.png"; // replace with your actual hero image path
 import { useDarkMode } from "../DarkModeContext.jsx"; // ✅ use global dark mode
 
