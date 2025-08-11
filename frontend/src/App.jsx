@@ -1,16 +1,18 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useState } from 'react'
-import './App.css'
-import Home from './Components/Home'
+import Home from "./Components/Home/home.jsx"; // ✅ Correct path & name
+import { DarkModeProvider } from "./Components/DarkModeContext.jsx";
 
 function App() {
   return (
-     <Router>
+    <DarkModeProvider>
+      <Router>
         <Routes>
-          <Route path="/" element={<Home/>} />
+          <Route path="/" element={<Home />} />
         </Routes>
       </Router>
-  )
+    </DarkModeProvider>
+  );
 }
 
-export default App
+export default App;
