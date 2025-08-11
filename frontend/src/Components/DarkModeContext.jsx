@@ -32,8 +32,5 @@ export const DarkModeProvider = ({ children }) => {
   );
 };
 
-<<<<<<< HEAD
 export default DarkModeContext;
-=======
-export default DarkModeContext;
->>>>>>> 9ea631d33864faa4b3f548c06763c45254995d35
+

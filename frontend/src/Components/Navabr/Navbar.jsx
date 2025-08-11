@@ -32,7 +32,7 @@
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            <span className="font-medium">Book</span>
+            <span className="font-medium" onClick={() => navigate("/venueDetails")}>Venue Details</span>
           </button>
 
           <button className="flex items-center space-x-2 px-4 py-2 border border-gray-600 rounded-lg hover:bg-gray-800 hover:text-white transition-colors duration-200">
@@ -55,9 +55,9 @@
           {/* Light/Dark Mode Toggle */}
           <button
             onClick={toggleDarkMode}
-            className="px-3 py-2 rounded-lg border border-gray-500 hover:bg-gray-700 hover:text-white transition-colors duration-200"
+            className="px-3 py-2 rounded-lg  hover:bg-gray-700 hover:text-white transition-colors duration-200"
           >
-            {isDarkMode ? "☀️ Light" : "🌙 Dark"}
+            {isDarkMode ? "☀️ " : "🌙"}
           </button>
         </div>
       </nav>
