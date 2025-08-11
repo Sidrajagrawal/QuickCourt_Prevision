@@ -8,6 +8,7 @@ import CourtBooking from "./Components/PaymentPage/CourtBooking";
 import { DarkModeProvider } from "./Components/DarkModeContext";
 import Home from "./Components/Home/home";
 import MainDashboard from "./Components/FacilitatorDash/MainDashboard";
+import ProfilePage from "./Components/UserProfile/ProfilePage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/venueDetails" element={<VenueDetails/>} />
           <Route path="/payments" element = {<CourtBooking/>} />
           <Route path="/dash" element = {<MainDashboard/>} />
+          <Route path="/user" element = {<ProfilePage/>} />
 
 
         </Routes>
