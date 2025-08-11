@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Calendar, Clock, DollarSign, FileText, TrendingUp, Users, CheckCircle, AlertCircle } from "lucide-react";
 
-const ProfileSection = ({ data }) => {
-  const [showForm, setShowForm] = useState(false);
+const ProfileSection = ({ onEditVenueClick, onAddVenueClick }) => {
+  
 
   return (
     <div>
@@ -19,11 +19,13 @@ const ProfileSection = ({ data }) => {
         <div className="flex flex-col gap-2">
           <button
             className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition-colors"
-            onClick={() => setShowForm(true)}
+            onClick={onAddVenueClick}
           >
             Add Venue
           </button>
-          <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors">
+          <button
+           className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors"
+           onClick={onEditVenueClick}>
             Edit Venue
           </button>
         </div>

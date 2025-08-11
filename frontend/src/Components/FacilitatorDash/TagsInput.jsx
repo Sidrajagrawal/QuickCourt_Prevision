@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Calendar, Clock, DollarSign, FileText, TrendingUp, Users, CheckCircle, AlertCircle } from "lucide-react";
 
 const TagsInput = ({ label, tags, setTags, placeholder }) => {
   const [inputValue, setInputValue] = useState("");
