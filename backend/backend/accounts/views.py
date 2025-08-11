@@ -1,15 +1,12 @@
-# apps/authentication/views.py
 import logging
-
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
 from django.contrib.auth.tokens import default_token_generator
 
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from .serializers import (
@@ -18,6 +15,7 @@ from .serializers import (
     PasswordResetRequestSerializer,
     SetNewPasswordSerializer,
     LogoutUserSerializer,
+    VerifyOTPSerializer,
 )
 from .utils import EmailUtil
 from .models import User
@@ -27,26 +25,28 @@ logger = logging.getLogger(__name__)
 
 class RegisterUserView(GenericAPIView):
     """
-    Registers a new user and sends an email-verification link.
+    Registers a new user, generates OTP, avatar and sends OTP via email.
     """
     serializer_class = UserRegisterSerializer
-
+    permission_classes = [AllowAny]
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        
+        try:
+            user.generate_avatar()
+        except Exception as exc:
+            logger.exception("Avatar generation failed", exc_info=exc)
 
         try:
-            EmailUtil.send_verification_email(user, request)
-        except Exception as exc:  # noqa: BLE001
-            logger.exception("Verification email failed", exc_info=exc)
+            EmailUtil.send_otp_email(user)
+        except Exception as exc:
+            logger.exception("OTP email failed", exc_info=exc)
             return Response(
                 {
                     "data": {"email": user.email},
-                    "message": (
-                        "User created, but we couldn’t send a verification email. "
-                        "Please contact support."
-                    ),
+                    "message": "User created, but we couldn't send OTP. Please contact support."
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -57,45 +57,39 @@ class RegisterUserView(GenericAPIView):
                     "email": user.email,
                     "first_name": user.first_name,
                     "last_name": user.last_name,
+                    "role": user.role,
+                    "avatar": user.avatar,
                     "is_verified": user.is_verified,
                 },
-                "message": "User created successfully. Please check your email to verify your account.",
+                "message": "User created successfully. An OTP has been sent to your email for verification.",
             },
             status=status.HTTP_201_CREATED,
         )
 
 
-class VerifyEmailView(GenericAPIView):
+class VerifyOTPView(GenericAPIView):
     """
-    Confirms the email-verification token sent to the user.
-    Browsers get a simple HTML message; API clients still get JSON if they
-    set an Accept header of application/json.
+    Verify email via OTP (email + otp).
     """
+    serializer_class = VerifyOTPSerializer
+    permission_classes = [AllowAny]
 
-    def get(self, request, token):
-        user = get_object_or_404(User, verification_token=token)
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
 
-        if user.is_verified:
-            return HttpResponse("Email already verified.")
-
-        if not user.is_token_valid():
-            response = {"detail": "Verification token has expired."}
-            return (
-                Response(response, status=400)
-                if request.accepted_media_type == "application/json"
-                else HttpResponse(response["detail"], status=400)
-            )
-
+        # mark verified & clear otp
         user.is_verified = True
-        user.verification_token = None
-        user.token_created_at = None
-        user.save(update_fields=["is_verified", "verification_token", "token_created_at"])
+        user.clear_otp()
+        user.save(update_fields=['is_verified', 'otp_code', 'otp_created_at'])
 
-        return HttpResponse("Email verified successfully!")
+        return Response({"message": "Account verified successfully."}, status=status.HTTP_200_OK)
 
 
 class LoginUserView(GenericAPIView):
     serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={"request": request})
@@ -107,20 +101,35 @@ class TestAuthenticationView(GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-            user = request.user
-            return Response({
-                "email": user.email,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-            }, status=status.HTTP_200_OK)
+        user = request.user
+        return Response({
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": user.role,
+            "avatar": user.avatar,
+        }, status=status.HTTP_200_OK)
+
+
+class AvatarView(GenericAPIView):
+    """
+    Return the avatar URL for the authenticated user.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({"avatar": user.avatar}, status=status.HTTP_200_OK)
+
 
 class PasswordResetRequestView(GenericAPIView):
     serializer_class = PasswordResetRequestSerializer
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        serializer.save()  # <== 🔥 this triggers the email
+        serializer.save()  # triggers the password reset email
         return Response({'message': "A link has been sent to your email to reset your password."}, status=status.HTTP_200_OK)
 
 
@@ -128,6 +137,7 @@ class PasswordResetConfirm(GenericAPIView):
     """
     Validates the uid/token pair sent to the user.
     """
+    permission_classes = [AllowAny]
 
     def get(self, request, uidb64, token):
         try:
@@ -156,11 +166,12 @@ class PasswordResetConfirm(GenericAPIView):
 
 class SetNewPassword(GenericAPIView):
     serializer_class = SetNewPasswordSerializer
+    permission_classes = [AllowAny]
 
     def patch(self, request):
         serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        serializer.save()  # <- actually resets the password
+        serializer.save()  # actually resets the password
         return Response(
             {"message": "Password has been reset successfully."},
             status=status.HTTP_200_OK,

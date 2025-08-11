@@ -114,7 +114,7 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Odoo',
+        'NAME': 'QuickCourt',
         'USER': 'root',
         'PASSWORD': 'admin@123',
         'HOST': 'localhost',
