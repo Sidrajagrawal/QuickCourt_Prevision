@@ -1,8 +1,8 @@
-import react from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDarkMode } from "../DarkModeContext.jsx";
+import PropTypes from "prop-types";
 
-export default function EditProfileForm() {
+export default function EditProfileForm({ name, email }) {
   const { isDarkMode } = useDarkMode();
   const [form, setForm] = useState({
     name: "",
@@ -11,12 +11,21 @@ export default function EditProfileForm() {
     newPassword: "",
   });
 
+  // Prefill when component mounts or props change
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      name: name || "",
+      email: email || "",
+    }));
+  }, [name, email]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSave = () => {
-    alert("Profile updated!");
+    alert(`Profile updated! Name: ${form.name}, Email: ${form.email}`);
   };
 
   return (
@@ -78,3 +87,8 @@ export default function EditProfileForm() {
     </div>
   );
 }
+
+EditProfileForm.propTypes = {
+  name: PropTypes.string,
+  email: PropTypes.string,
+};

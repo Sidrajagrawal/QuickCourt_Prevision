@@ -1,8 +1,8 @@
-import react from "react";
 import PropTypes from "prop-types";
 import { useDarkMode } from "../DarkModeContext.jsx";
+import ProfilePhoto from "./ProfilePhoto.jsx";
 
-export default function Sidebar({ activeTab, setActiveTab }) {
+export default function Sidebar({ activeTab, setActiveTab, user }) {
   const { isDarkMode } = useDarkMode();
 
   return (
@@ -13,16 +13,18 @@ export default function Sidebar({ activeTab, setActiveTab }) {
           : "bg-white border-gray-200"
       }`}
     >
-      {/* User Info */}
-      <div className="text-center mb-6">
-        <div className="w-20 h-20 mx-auto rounded-full bg-gray-500 mb-3" />
-        <h3 className="font-semibold">Mitchell Admin</h3>
-        <p className="text-sm text-gray-400">9999999999</p>
-        <p className="text-xs text-gray-400">mitchelladmin2187@gmail.com</p>
-      </div>
+      <ProfilePhoto editable={activeTab === "edit"} />
+      <br></br>
+      <h3 className="font-semibold mt-3 text-center">{user.name}</h3>
 
-      {/* Nav Buttons */}
-      <nav className="flex flex-col space-y-2">
+      {activeTab === "bookings" && (
+        <>
+          <p className="text-sm text-gray-400 text-center">{user.phone}</p>
+          <p className="text-xs text-gray-400 text-center">{user.email}</p>
+        </>
+      )}
+
+      <nav className="flex flex-col space-y-2 mt-6">
         <button
           onClick={() => setActiveTab("edit")}
           className={`px-4 py-2 rounded-lg text-left font-medium ${
@@ -55,4 +57,9 @@ export default function Sidebar({ activeTab, setActiveTab }) {
 Sidebar.propTypes = {
   activeTab: PropTypes.string.isRequired,
   setActiveTab: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    name: PropTypes.string,
+    email: PropTypes.string,
+    phone: PropTypes.string,
+  }).isRequired,
 };
