@@ -1,4 +1,3 @@
-# venues/models.py
 from django.db import models
 from django.conf import settings
 from accounts.models import User
@@ -9,6 +8,7 @@ class Location(models.Model):
     landmark = models.CharField(max_length=255, blank=True, null=True)
     pincode = models.CharField(max_length=10)
     city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100, blank=True, null=True) # <-- Added state field
 
     def __str__(self):
         return f"{self.line1}, {self.city}"
