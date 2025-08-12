@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../Navabr/Navbar.jsx";
 import PopularSports from "./PopularSports.jsx";
 import VenueCard from "./VenueCard.jsx";
-import heroImage from "../../assets/hero.png";
+import heroImage from "../../assets/img1.png";
 import { useDarkMode } from "../DarkModeContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -66,12 +66,12 @@ const Home = () => {
                     </div>
 
                     <div className="space-y-4">
-                        <h1 className="text-4xl md:text-5xl font-bold leading-tight transition-colors duration-300 text-gray-900 dark:text-white">
+                        <h1 className="text-4xl md:text-5xl font-bold leading-tight transition-colors mx-6.5 duration-300 text-gray-900 dark:text-white">
                             <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">FIND PLAYERS &</span>
                             <br />
                             <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">VENUES NEARBY</span>
                         </h1>
-                        <p className="text-lg leading-relaxed transition-colors duration-300 text-gray-600 dark:text-gray-300">
+                        <p className="text-lg leading-relaxed transition-colors duration-300 text-gray-600 dark:text-gray-300 mx-7">
                             Seamlessly explore sports venues and play with
                             <br />
                             sports enthusiasts just like you!
@@ -79,7 +79,7 @@ const Home = () => {
                     </div>
                 </div>
 
-                <div className="hidden md:block absolute right-6 top-20 w-96 h-64 rounded-3xl overflow-hidden shadow-2xl border-2 border-white/50 dark:border-gray-600">
+                <div className="hidden md:block absolute right-26 top-20 w-120 h-64 rounded-3xl overflow-hidden shadow-2xl ">
                     <img src={heroImage} alt="Hero" className="w-full h-full object-cover" />
                 </div>
             </div>

@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useLocation } from "../Utils/LocationContext.jsx";
 import { useDarkMode } from "../DarkModeContext.jsx";
-import { ChevronDown, User, LogOut } from "lucide-react"; // Import necessary icons
+import { ChevronDown, User, LogOut, MapPin } from "lucide-react"; // Import necessary icons
 import { AnimatePresence, motion } from "framer-motion"; // <-- Corrected: Import AnimatePresence and motion
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { findAndFetchNearbyVenues, isLoading } = useLocation();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
@@ -104,24 +106,10 @@ const Navbar = () => {
         }`}
       >
         <div className="text-xl font-bold tracking-wide cursor-pointer" onClick={() => navigate("/")}>QUICKCOURT</div>
-
+          
         <div className="flex items-center space-x-6">
-          <button className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors duration-200 bg-gray-800 text-white hover:bg-gray-700">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            <span className="font-medium" onClick={() => navigate("/venueDetails")}>Venue Details</span>
-          </button>
+         
+          
 
           {loading ? (
             <div className="text-sm font-medium">Loading...</div>
@@ -146,6 +134,8 @@ const Navbar = () => {
                       isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
                     }`}
                   >
+                   
+
                     <button
                       onClick={() => {
                         navigate('/profile');
@@ -167,6 +157,7 @@ const Navbar = () => {
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
                     </button>
+                 
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -189,7 +180,18 @@ const Navbar = () => {
               <span className="font-medium cursor-pointer" onClick={() => navigate("/auth")}>Login / Sign Up</span>
             </button>
           )}
-
+              {/* --- NEW: Get Location Button --- */}
+                <button
+                    onClick={findAndFetchNearbyVenues}
+                    disabled={isLoading}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors duration-200 hover:text-blue-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                    <MapPin className='w-4 h-4  text-green-500' />
+                    <span className="font-medium">
+                        {location ? "Location Acquired" : "Get My Location"}
+                    </span>
+                </button>
+                {/* --- End of New Button --- */}
           <button
             onClick={toggleDarkMode}
             className="px-3 py-2 rounded-lg hover:bg-gray-700 hover:text-white transition-colors duration-200"
