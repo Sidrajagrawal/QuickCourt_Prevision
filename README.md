@@ -9,10 +9,10 @@ QuickCourt is a modern, full-stack web application designed to seamlessly connec
 ---
 
 ### 📹 Video Demonstration
+https://drive.google.com/file/d/1Cxscu_w8Iro9Rkx-xNKyD__wIEkD7j5_/view?usp=drivesdk
 
-*(Here you can add a link to your project demonstration video)*
-
-**[Insert Your YouTube/Vimeo Video Link Here]**
+###  API Demonstration
+https://docs.google.com/document/d/1mLxMXZDU1Bwzz91Zy45biFpXGZM_cqqcRFogR7uzl5k/edit?usp=drivesdk
 
 ---
 
