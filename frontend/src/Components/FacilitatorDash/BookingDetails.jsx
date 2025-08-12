@@ -1,15 +1,53 @@
-import React, { useState } from "react";
-import { Calendar, Clock, DollarSign, FileText, TrendingUp, Users, CheckCircle, AlertCircle } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { FileText } from "lucide-react";
 
-const BookingDetails = ({data}) => {
+const BookingDetails = () => {
   const [selectedTab, setSelectedTab] = useState("past");
-  const bookings = data.bookings[selectedTab];
+  const [bookingsData, setBookingsData] = useState({ past: [], current: [], upcoming: [] });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const token = localStorage.getItem("access");
+        const res = await fetch("http://localhost:8000/api/v1/bookings/facilitator/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch bookings");
+        const data = await res.json();
+
+        // Categorize bookings
+        const today = new Date().toISOString().split("T")[0];
+        const past = data.filter(b => b.date < today);
+        const current = data.filter(b => b.date === today);
+        const upcoming = data.filter(b => b.date > today);
+
+        setBookingsData({ past, current, upcoming });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   const tabs = [
-    { key: "past", label: "Past", count: data.bookings.past.length },
-    { key: "current", label: "Current", count: data.bookings.current.length },
-    { key: "upcoming", label: "Upcoming", count: data.bookings.upcoming.length }
+    { key: "past", label: "Past", count: bookingsData.past.length },
+    { key: "current", label: "Current", count: bookingsData.current.length },
+    { key: "upcoming", label: "Upcoming", count: bookingsData.upcoming.length },
   ];
+
+  const bookings = bookingsData[selectedTab];
+
+  if (loading) {
+    return <p>Loading bookings...</p>;
+  }
 
   return (
     <div className="bg-white rounded-lg p-6 mt-4 shadow-md">
@@ -39,8 +77,8 @@ const BookingDetails = ({data}) => {
           <div key={booking.id} className="border rounded-lg p-4 hover:bg-gray-50">
             <div className="flex justify-between items-start">
               <div>
-                <h4 className="font-medium">{booking.venueName}</h4>
-                <p className="text-sm text-gray-600">Customer: {booking.customer}</p>
+                <h4 className="font-medium">{booking.venue_name}</h4>
+                <p className="text-sm text-gray-600">Customer: {booking.user_name}</p>
                 <p className="text-sm text-gray-600">Date: {booking.date}</p>
                 <p className="text-sm text-gray-600">Time: {booking.time}</p>
               </div>
@@ -55,5 +93,4 @@ const BookingDetails = ({data}) => {
   );
 };
 
-
-export default BookingDetails
+export default BookingDetails;

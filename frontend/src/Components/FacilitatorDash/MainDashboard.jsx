@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Calendar,
   Clock,
@@ -161,122 +161,81 @@ const DUMMY_DATA = {
 
 const MainDashboard = () => {
   const [showVenueList, setShowVenueList] = useState(false);
-  const [selectedVenue, setSelectedVenue] = useState(null);
-  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
-  const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
-  
-  const [venues, setVenues] = useState([]); // Initial state is an empty array
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const [selectedVenue, setSelectedVenue] = useState(null);
+const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+const [isAddPopupOpen, setIsAddPopupOpen] = useState(false);
 
-  // Fetch venues from the API on component mount
-  useEffect(() => {
-    const fetchMyVenues = async () => {
-      setLoading(true);
-      setError(null);
+ const [venues, setVenues] = useState([
+    {
+      id: 1,
+      name: "City Sports Ground",
+      location: "Downtown",
+      price: 500,
+      sports: ["Cricket", "Football"],
+      amenities: ["Parking", "Floodlights"],
+    },
+    {
+      id: 2,
+      name: "Greenfield Arena",
+      location: "Uptown",
+      price: 700,
+      sports: ["Tennis", "Badminton"],
+      amenities: ["Cafeteria", "Restrooms"],
+    },
+  ]);
+const handleEditClick = (venue) => {
+  setSelectedVenue(venue);
+  setIsEditPopupOpen(true);
+};
 
-      const accessToken = localStorage.getItem('access');
-      const userRole = localStorage.getItem('role');
+const handleUpdateVenue = (updatedVenue) => {
+  setVenues((prev) =>
+    prev.map((v) => (v.id === updatedVenue.id ? updatedVenue : v))
+  );
+  setIsEditPopupOpen(false);
+};
 
-      if (!accessToken || userRole !== 'FACILITY') {
-        setError("Not authorized. Please log in as a Facility Owner.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/venues/', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setVenues(data);
-      } catch (err) {
-        console.error("Failed to fetch venues:", err);
-        setError("Failed to load venues. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMyVenues();
-  }, []);
-
-  const handleEditClick = (venue) => {
-    setSelectedVenue(venue);
-    setIsEditPopupOpen(true);
-  };
-
-  const handleUpdateVenue = (updatedVenue) => {
-    setVenues((prev) =>
-      prev.map((v) => (v.id === updatedVenue.id ? updatedVenue : v))
-    );
-    setIsEditPopupOpen(false);
-  };
-
-  const handleAddVenue = (newVenue) => {
-    setVenues((prev) => [
-      ...prev,
-      { ...newVenue, id: prev.length ? prev[prev.length - 1].id + 1 : 1 },
-    ]);
-    setIsAddPopupOpen(false);
-  };
+const handleAddVenue = (newVenue) => {
+  setVenues((prev) => [
+    ...prev,
+    { ...newVenue, id: prev.length ? prev[prev.length - 1].id + 1 : 1 },
+  ]);
+  setIsAddPopupOpen(false);
+};
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
       <ProfileSection
         onAddVenueClick={() => setIsAddPopupOpen(true)}
-        onEditVenueClick={() => setShowVenueList(!showVenueList)} // <-- Toggling the state here
+        onEditVenueClick={() => setShowVenueList(true)}
       />
       
-      {showVenueList ? (
-        <div className="mt-6">
-          <h1 className="text-3xl font-bold mb-4">My Venues</h1>
-          {loading ? (
-            <p>Loading your venues...</p>
-          ) : error ? (
-            <p className="text-red-500">{error}</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {venues.map((venue) => (
-                <div key={venue.id} className="border rounded-lg p-4 shadow">
-                  <h2 className="text-lg font-semibold">{venue.name}</h2>
-                  <p className="text-gray-500">
-                    {/* Corrected: Accessing the city property of the location object */}
-                    {venue.location.city}
-                  </p>
-                  <p>
-                    <strong>Price:</strong> ₹{venue.price_per_hour} / hour
-                  </p>
-                  <p>
-                    <strong>Sports:</strong> {venue.sports.join(", ")}
-                  </p>
-                  <p>
-                    <strong>Amenities:</strong> {venue.amenities.join(", ")}
-                  </p>
-                  <button
-                    onClick={() => handleEditClick(venue)}
-                    className="mt-3 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
-                  >
-                    Edit
-                  </button>
-                </div>
-              ))}
+      {showVenueList && (
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {venues.map((venue) => (
+            <div key={venue.id} className="border rounded-lg p-4 shadow">
+              <h2 className="text-lg font-semibold">{venue.name}</h2>
+              <p className="text-gray-500">{venue.location}</p>
+              <p>
+                <strong>Price:</strong> ₹{venue.price} / hour
+              </p>
+              <p>
+                <strong>Sports:</strong> {venue.sports.join(", ")}
+              </p>
+              <p>
+                <strong>Amenities:</strong> {venue.amenities.join(", ")}
+              </p>
+              <button
+                onClick={() => handleEditClick(venue)}
+                className="mt-3 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+              >
+                Edit
+              </button>
             </div>
-          )}
+          ))}
         </div>
-      ) : (
-        <StatsSection data={DUMMY_DATA} />
       )}
-
+      <StatsSection data={DUMMY_DATA} />
       {isAddPopupOpen && (
         <AddVenueForm
           onClose={() => setIsAddPopupOpen(false)}

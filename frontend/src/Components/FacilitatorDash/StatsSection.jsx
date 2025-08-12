@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Calendar, Clock, DollarSign, FileText, TrendingUp, Users, CheckCircle, AlertCircle } from "lucide-react";
 import EarningsDashboard from "./EarningsDashboard";
 import TimeSlots from "./TimeSlots";
-import ActiveOrders from "./ActiveOrders";
 import BookingDetails from "./BookingDetails";
 import CalendarView from "./CalendarView";
 const StatsSection = ({data}) => {
@@ -10,7 +9,6 @@ const StatsSection = ({data}) => {
 
   const stats = [
     { key: "bookings", label: "Total Bookings", icon: FileText, color: "blue" },
-    { key: "orders", label: "Active Orders", icon: Users, color: "orange" },
     { key: "earnings", label: "Earnings", icon: DollarSign, color: "green" },
     { key: "slots", label: "Time Slots", icon: Clock, color: "purple" }
   ];
@@ -19,8 +17,6 @@ const StatsSection = ({data}) => {
     switch (activeSection) {
       case "bookings":
         return <BookingDetails data = {data}/>;
-      case "orders":
-        return <ActiveOrders data = {data}/>;
       case "earnings":
         return <EarningsDashboard data = {data}/>;
       case "slots":

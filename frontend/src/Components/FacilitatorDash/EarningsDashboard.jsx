@@ -1,141 +1,151 @@
-import React, { useState } from "react";
-import { Calendar, Clock, DollarSign, FileText, TrendingUp, Users, CheckCircle, AlertCircle, Activity } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Legend
+} from "recharts";
 
-const EarningsDashboard = ({data}) => {
-  const [selectedPeriod, setSelectedPeriod] = useState("7");
-  const earningsData = data.earnings[selectedPeriod];
+const EarningsDashboard = () => {
+  const [graphData, setGraphData] = useState([]);
+  const [stats, setStats] = useState({
+    totalEarnings: 0,
+    totalOrders: 0,
+    avgEarning: 0,
+    growthRate: null
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const access = localStorage.getItem("access");
+    if (!access) {
+      setError("No access token found");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    // NOTE: no trailing space in URL
+    axios.get("http://127.0.0.1:8000/api/v1/bookings/facilitator/dashboard/", {
+      headers: { Authorization: `Bearer ${access}` }
+    })
+      .then((res) => {
+        const data = res.data || {};
+        // prefer graphData if provided, otherwise build from chart fields
+        const gd = Array.isArray(data.graphData) && data.graphData.length ? data.graphData
+          : (data.chart && Array.isArray(data.chart.labels) ? data.chart.labels.map((label, i) => ({
+              date: label,
+              earnings: (data.chart.earnings && data.chart.earnings[i]) || 0,
+              orders: (data.chart.orders && data.chart.orders[i]) || 0
+            })) : []);
+
+        setGraphData(gd);
+        if (data.stats) {
+          setStats({
+            totalEarnings: Number(data.stats.totalEarnings || 0),
+            totalOrders: Number(data.stats.totalOrders || 0),
+            avgEarning: Number(data.stats.avgEarning || 0),
+            growthRate: data.stats.growthRate // can be null
+          });
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Dashboard fetch error:", err);
+        // if backend returned HTML 401/404 content we still handle gracefully
+        if (err.response && err.response.data) {
+          // try to read JSON message
+          setError(err.response.data.detail || "Failed to load dashboard");
+        } else {
+          setError("Failed to load dashboard");
+        }
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p className="p-4">Loading dashboard...</p>;
+  if (error) return <p className="p-4 text-red-600">{error}</p>;
+
+  // Cards values
+  const { totalEarnings, totalOrders, avgEarning, growthRate } = stats;
+
+  const formatCurrency = (v) => `₹${Number(v || 0).toLocaleString()}`;
+  const formatNumber = (v) => Number(v || 0).toLocaleString();
+  const formatGrowth = (g) => (g === null || g === undefined ? "—" : `${Number(g).toFixed(2)}%`);
 
   return (
     <div className="bg-white rounded-lg p-6 mt-4 shadow-md">
       <div className="flex items-center gap-2 mb-4">
-        <DollarSign className="w-5 h-5 text-green-600" />
-        <h3 className="text-lg font-semibold">Earnings & Engagement Dashboard</h3>
+        <h3 className="text-lg font-semibold">Earnings Dashboard</h3>
       </div>
 
-      <div className="flex gap-4 mb-6">
-        <button
-          onClick={() => setSelectedPeriod("7")}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            selectedPeriod === "7" 
-              ? "bg-green-500 text-white" 
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          7 Days
-        </button>
-        <button
-          onClick={() => setSelectedPeriod("30")}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            selectedPeriod === "30" 
-              ? "bg-green-500 text-white" 
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          30 Days
-        </button>
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <StatCard title="Total Earnings" value={formatCurrency(totalEarnings)} />
+        <StatCard title="Avg Earning" value={formatCurrency(avgEarning)} />
+        <StatCard title="Total Orders" value={formatNumber(totalOrders)} />
+        <StatCard title="Growth Rate" value={formatGrowth(growthRate)} />
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-green-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-green-600" />
-            <h4 className="font-medium text-green-800">Total Earnings</h4>
-          </div>
-          <p className="text-2xl font-bold text-green-600">₹{earningsData.totalEarnings}</p>
-        </div>
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-600" />
-            <h4 className="font-medium text-blue-800">Total Orders</h4>
-          </div>
-          <p className="text-2xl font-bold text-blue-600">{earningsData.totalOrders}</p>
-        </div>
-        <div className="bg-purple-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-purple-600" />
-            <h4 className="font-medium text-purple-800">Avg Order Value</h4>
-          </div>
-          <p className="text-2xl font-bold text-purple-600">₹{earningsData.avgOrderValue}</p>
-        </div>
-        <div className="bg-orange-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2">
-            <BarChart className="w-5 h-5 text-orange-600" />
-            <h4 className="font-medium text-orange-800">Growth Rate</h4>
-          </div>
-          <p className="text-2xl font-bold text-orange-600">+{earningsData.growthRate}%</p>
-        </div>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Line Chart */}
+      {/* Charts area */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Line chart - earnings */}
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h4 className="font-medium mb-3 text-gray-800">Earnings Trend</h4>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={earningsData.data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="earnings" 
-                stroke="#10b981" 
-                strokeWidth={2}
-                dot={{ fill: '#10b981' }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <h4 className="font-medium mb-3">Earnings Over Time (Line)</h4>
+          {graphData.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No chart data to display</div>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={graphData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip formatter={(val) => `₹${val}`} />
+                <Line type="monotone" dataKey="earnings" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
+                <Legend />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
-        {/* Bar Chart */}
+        {/* Bar chart - orders */}
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h4 className="font-medium mb-3 text-gray-800">Orders & Bookings</h4>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={earningsData.data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="orders" fill="#3b82f6" name="Orders" />
-              <Bar dataKey="bookings" fill="#8b5cf6" name="Bookings" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Detailed Data Table */}
-      <div className="space-y-2">
-        <h4 className="font-medium mb-3">Detailed Performance</h4>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="text-left p-3 rounded-tl">Period</th>
-                <th className="text-right p-3">Orders</th>
-                <th className="text-right p-3">Bookings</th>
-                <th className="text-right p-3 rounded-tr">Earnings</th>
-              </tr>
-            </thead>
-            <tbody>
-              {earningsData.data.map((item, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="p-3 font-medium">{item.date}</td>
-                  <td className="p-3 text-right text-blue-600">{item.orders}</td>
-                  <td className="p-3 text-right text-purple-600">{item.bookings}</td>
-                  <td className="p-3 text-right font-semibold text-green-600">₹{item.earnings}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <h4 className="font-medium mb-3">Orders Over Time (Bar)</h4>
+          {graphData.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">No chart data to display</div>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={graphData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="orders" fill="#3b82f6" />
+                <Legend />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
+const StatCard = ({ title, value }) => (
+  <div className="bg-white p-4 rounded-lg border">
+    <div className="text-sm text-gray-600">{title}</div>
+    <div className="text-2xl font-bold">{value}</div>
+  </div>
+);
 
-
-export default EarningsDashboard
+export default EarningsDashboard;

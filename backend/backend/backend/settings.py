@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'accounts',
     'venues',
+    'bookings',
 ]
 
 MIDDLEWARE = [

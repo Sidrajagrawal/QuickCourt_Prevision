@@ -115,4 +115,3 @@ const CourtSelection = ({ selectedCourts, setSelectedCourts, darkMode }) => {
 };
 
 export default CourtSelection
-
